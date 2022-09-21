@@ -1,5 +1,5 @@
 const jwt = require('jsonwebtoken');
-const { hash } = require('bcryptjs')
+const { compare, hash } = require('bcryptjs')
 const { catchAsync } = require('../utils/utils')
 const User = require('../models/User');
 const Token = require("../models/Token");
@@ -9,9 +9,22 @@ const saltRounds = 10;
 
 module.exports = {
   login: catchAsync(async (req, res) => {
-    // const { email, password } = req.body;
+    const { email, password } = req.body;
+    // find email
+    console.log("email, passwor")
+    console.log(email, password)
+    const user = await User.findOne({email});
+    console.log("user")
+    console.log(user)
+    // match
+    if(!user || !(await compare(password, user.password)) || user.verified === false) res.json({status: 'failure', message: 'Invalid Email or Password'})
+    const token = jwt.sign({id: user.id}, process.env.JWT_SECRET , {
+        expiresIn: '90d'
+    })
 
-    res.json({status: 'success'})
+    console.log(`Token: ${token}`);
+
+    res.json({status: 'success', token})
   }),
   signup: catchAsync(async (req, res) => {
     try {

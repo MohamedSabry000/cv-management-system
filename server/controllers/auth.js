@@ -16,6 +16,9 @@ module.exports = {
     const user = await User.findOne({email});
     console.log("user")
     console.log(user)
+    console.log(!user)
+    console.log(!(await compare(password, user.password)))
+    console.log(user.verified === false)
     // match
     if(!user || !(await compare(password, user.password)) || user.verified === false) res.json({status: 'failure', message: 'Invalid Email or Password'})
     const token = jwt.sign({id: user.id}, process.env.JWT_SECRET , {

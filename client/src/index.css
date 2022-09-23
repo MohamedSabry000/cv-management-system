@@ -31,3 +31,24 @@ a {
   justify-content: center;
   align-items: center;
 }
+
+.flex-between {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.createCv {
+  position: absolute;
+  padding: 20px;
+  background: #FFF;
+  border-radius: 5px;
+}
+
+.createCv input {
+  width: 100%;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  margin: 10px;
+  padding: 5px;
+}

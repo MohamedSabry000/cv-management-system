@@ -20,11 +20,23 @@ const resetPassword = async (id: string, token: string, password: string) => {
   return data;
 }
 
+const createCV = async (name: string, email: string) => {
+  const data = await getDataFromAPI.post('cv', { name, email });
+  return data;
+}
+
+const getCvs = async () => {
+  const data = await getDataFromAPI.get('cv');
+  return data;
+}
+
 const cvsService = {
   login,
   register,
   forgotPassword,
-  resetPassword
+  resetPassword,
+  createCV,
+  getCvs
 };
 
 export default cvsService;

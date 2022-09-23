@@ -31,7 +31,7 @@ function Copyright(props: any) {
 export default function ForgotPassword() {
   const [email, setEmail] = React.useState("");
   const dispatch = useDispatch()
-  const {isError, isSuccess} = useSelector((state: any) => state);
+  const {isError, isSuccess} = useSelector((state: any) => state.cv);
   const [clicked, setClicked] = React.useState(false);
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {

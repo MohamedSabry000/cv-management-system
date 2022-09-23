@@ -8,12 +8,13 @@ import {
   Register,
   ForgotPassword,
   ResetPassword,
+  Home,
 } from './components';
 import { useEffect } from 'react';
 import { reset } from './redux/cvs/cvs-slice';
 
 function App() {
-  const { user } = useSelector((state: any) => state);
+  const { user } = useSelector((state: any) => state.cv);
   const dispatch = useDispatch();
   useEffect(() => {
     dispatch(reset());
@@ -26,7 +27,7 @@ function App() {
           {
             user ? (
               <>
-
+                <Route path="/" element={<Home />} />
               </>
             ) : (
               <>

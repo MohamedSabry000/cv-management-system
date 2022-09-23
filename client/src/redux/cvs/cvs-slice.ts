@@ -1,6 +1,6 @@
 import { BASE_URL } from '../../utils/getDataFromAPI'
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import { User } from '../../@types/types';
+import { User, CV } from '../../@types/types';
 
 import cvsService from './cvs-services';
 
@@ -32,9 +32,25 @@ export const resetPassword = createAsyncThunk(
   }
 );
 
+// TODO: add createCV thunk
+export const createCV = createAsyncThunk(
+  'cvs/createCV',
+  async (cv: { name: string, email: string }) => {
+    return await cvsService.createCV(cv.name, cv.email);
+  }
+);
+
+export const getCvs = createAsyncThunk(
+  'cvs/getCvs',
+  async () => {
+    return await cvsService.getCvs();
+  }
+);
+
 
 const initialState = {
   user: null as User | null,
+  cvs: [] as CV[],
   isLoading: false as boolean,
   isSuccess: false as boolean,
   isError: false as boolean,
@@ -50,6 +66,8 @@ const cvsSlice = createSlice({
       });
     },
     setLogout(state) {
+      state.user = null;
+      state.cvs = [];
       localStorage.removeItem('token');
       Array.from(Object.entries(initialState)).forEach(([key, value]) => {
         state = {...state, [key]: value};
@@ -67,9 +85,10 @@ const cvsSlice = createSlice({
       state.isLoading = false;
       console.log(action.payload)
       if(action.payload.data.status === "success") {
+        const { name, token, email } = action.payload.data;
         state.isSuccess = true;
         state.isError = false;
-        state.user = action.payload.data.token;
+        state.user = {name, email, token};
         localStorage.setItem('token', action.payload.data.token);
       } else {
         state.isError = true;
@@ -134,6 +153,44 @@ const cvsSlice = createSlice({
       }
     },
     [resetPassword.rejected.type]: (state, action) => {
+      state.isLoading = false;
+      state.isError = true;
+    },
+    // Create CV
+    [createCV.pending.type]: (state, action) => {
+      state.isLoading = true;
+    },
+    [createCV.fulfilled.type]: (state, action) => {
+      state.isLoading = false;
+      if(action.payload.data.status === 'success') {
+        state.isSuccess = true;
+        state.isError = false;
+        state.cvs.push(action.payload.data.cv);
+      } else {
+        state.isSuccess = false;
+        state.isError = true;
+      }
+    },
+    [createCV.rejected.type]: (state, action) => {
+      state.isLoading = false;
+      state.isError = true;
+    },
+    // Get CVs
+    [getCvs.pending.type]: (state, action) => {
+      state.isLoading = true;
+    },
+    [getCvs.fulfilled.type]: (state, action) => {
+      state.isLoading = false;
+      if(action.payload.data.status === 'success') {
+        state.isSuccess = true;
+        state.isError = false;
+        state.cvs = action.payload.data.cvs;
+      } else {
+        state.isSuccess = false;
+        state.isError = true;
+      }
+    },
+    [getCvs.rejected.type]: (state, action) => {
       state.isLoading = false;
       state.isError = true;
     },

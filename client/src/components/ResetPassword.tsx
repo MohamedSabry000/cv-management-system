@@ -36,7 +36,7 @@ export default function ResetPassword() {
     confirm: "",
   });
   const dispatch = useDispatch()
-  const {isError, isSuccess} = useSelector((state: any) => state);
+  const {isError, isSuccess} = useSelector((state: any) => state.cv);
   const [clicked, setClicked] = React.useState(false);
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {

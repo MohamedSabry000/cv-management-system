@@ -1,5 +1,10 @@
-export { default as Navbar } from './Navbar';
-export { default as Login } from './Login';
-export { default as Register } from './Register';
-export { default as ForgotPassword } from './ForgotPassword';
-export { default as ResetPassword } from './ResetPassword';
+import Navbar from './Navbar';
+import Login from './Login';
+import Register from './Register';
+import ForgotPassword from './ForgotPassword';
+import ResetPassword from './ResetPassword';
+import CVList from './CVList';
+import Home from './Home';
+
+
+export { Navbar, Login, Register, ForgotPassword, ResetPassword, CVList, Home };

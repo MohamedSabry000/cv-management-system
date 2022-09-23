@@ -21,13 +21,15 @@ module.exports = {
     console.log(user.verified === false)
     // match
     if(!user || !(await compare(password, user.password)) || user.verified === false) res.json({status: 'failure', message: 'Invalid Email or Password'})
-    const token = jwt.sign({id: user.id}, process.env.JWT_SECRET , {
-        expiresIn: '90d'
-    })
+    else {
+        const token = jwt.sign({id: user.id}, process.env.JWT_SECRET , {
+            expiresIn: '90d'
+        })
 
-    console.log(`Token: ${token}`);
+        console.log(`Token: ${token}`);
 
-    res.json({status: 'success', token})
+        res.json({status: 'success', token, email: user.email, name: user.name})
+    }
   }),
   signup: catchAsync(async (req, res) => {
     try {
@@ -162,4 +164,20 @@ module.exports = {
         res.status(400).send("An error occured");
     }
   }),
+  authenticated: (req, res, next) => {
+    try{
+        console.log(req.headers)
+        const token = req.headers.authorization.split(' ')[1];
+
+        const decodedToken = jwt.verify(token, process.env.JWT_SECRET)
+        const { id } = decodedToken;
+        req.userId = id;
+        return next();
+    } catch(error){
+        res.json({
+            status: 'failure',
+            message: 'You are not Authenticated'
+        })
+    }
+  },
 }

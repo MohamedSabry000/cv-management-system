@@ -18,6 +18,9 @@ import { useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { setLogout } from '../redux/cvs/cvs-slice';
 
+const pages = [
+  {key: 'create-cv', value: 'Create CV', path: '/cv/create'},
+]
 const settings = [{key:'logout', value: 'Logout'}];
 
 const ResponsiveAppBar = () => {
@@ -25,7 +28,7 @@ const ResponsiveAppBar = () => {
   const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(null);
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const { user } = useSelector((state: any) => state);
+  const { user } = useSelector((state: any) => state.cv);
   const pathname = window.location.pathname.split('/')[1];
 
   const handleOpenNavMenu = (event: React.MouseEvent<HTMLElement>) => {
@@ -104,7 +107,11 @@ const ResponsiveAppBar = () => {
                 display: { xs: 'block', md: 'none' },
               }}
             >
-              {/* {Our Menu} */}
+              {!!user && pages.map((page: {key:string, value:string, path:string}) => (
+                <MenuItem key={page.key} onClick={() => navigate(page.path)}>
+                  <Typography textAlign="center">{page.value}</Typography>
+                </MenuItem>
+              ))}
             </Menu>
           </Box>
           <CardMedia image={Logo} sx={{ display: { xs: 'flex', md: 'none' }, mr: 1 }} />
@@ -131,14 +138,22 @@ const ResponsiveAppBar = () => {
             LOGO
           </Typography>
           <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' } }}>
-            {/* {Our Menu} */}
+            {!!user && pages.map((page: {key:string, value:string, path:string}) => (
+              <Button
+                key={page.key}
+                onClick={() => navigate(page.path)}
+                sx={{ my: 2, color: 'white', display: 'block' }}
+              >
+                {page.value}
+              </Button>
+            ))}
           </Box>
           {
             user ? (
               <Box sx={{ flexGrow: 0 }}>
                 <Tooltip title="Open settings">
                   <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-                    <Avatar alt="Remy Sharp" src="/static/images/avatar/2.jpg" />
+                    <Avatar alt={user.name[0].toUpperCase()} src={"/static/images/avatar/2.jpg"} />
                   </IconButton>
                 </Tooltip>
                 <Menu

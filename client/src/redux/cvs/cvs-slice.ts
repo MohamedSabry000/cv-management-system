@@ -47,6 +47,20 @@ export const getCvs = createAsyncThunk(
   }
 );
 
+export const deleteCV = createAsyncThunk(
+  'cvs/deleteCV',
+  async (id: string) => {
+    return await cvsService.deleteCV(id);
+  }
+);
+
+export const updateCV = createAsyncThunk(
+  'cvs/updateCV',
+  async (cv: CV) => {
+    return await cvsService.updateCV(cv);
+  }
+);
+
 // TODO: add createSection thunk
 export const createSection = createAsyncThunk(
   'cvs/createSection',
@@ -210,6 +224,43 @@ const cvsSlice = createSlice({
     [getCvs.rejected.type]: (state, action) => {
       state.isLoading = false;
       state.isError = true;
+    },
+    // Update CV
+    [updateCV.pending.type]: (state, action) => {
+      state.isLoading = true;
+    },
+    [updateCV.fulfilled.type]: (state, action) => {
+      state.isLoading = false;
+      if(action.payload.data.status === 'success') {
+        state.isSuccess = true;
+        state.isError = false;
+        const index = state.cvs.findIndex(cv => cv._id === action.payload.data.cv._id);
+        console.log(action.payload.data.cv);
+        state.cvs[index] = action.payload.data.cv;
+      } else {
+        state.isSuccess = false;
+        state.isError = true;
+      }
+    },
+    [updateCV.rejected.type]: (state, action) => {
+      state.isLoading = false;
+      state.isError = true;
+    },
+    // Delete CV
+    [deleteCV.pending.type]: (state, action) => {
+      state.isLoading = true;
+    },
+    [deleteCV.fulfilled.type]: (state, action) => {
+      state.isLoading = false;
+      if(action.payload.data.status === 'success') {
+        state.isSuccess = true;
+        state.isError = false;
+        const index = state.cvs.findIndex(cv => cv._id === action.payload.data.cv._id);
+        state.cvs.splice(index, 1);
+      } else {
+        state.isSuccess = false;
+        state.isError = true;
+      }
     },
     // Create Section
     [createSection.pending.type]: (state, action) => {

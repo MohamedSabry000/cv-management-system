@@ -5,7 +5,7 @@ interface IProps {
   setShow: (flag: boolean) => void,
   head: string,
   label: string,
-  value: string,
+  value: string | undefined,
   handleSubmit: any
 }
 
@@ -13,6 +13,12 @@ function ModalComponent({ setShow, head, label, value, handleSubmit }: IProps) {
   const [data, setData] = useState(value || '')
 
   const handleCancel = () => {
+    setData('')
+    setShow(false)
+  }
+
+  const handleSave = () => {
+    handleSubmit(data)
     setData('')
     setShow(false)
   }
@@ -34,7 +40,7 @@ function ModalComponent({ setShow, head, label, value, handleSubmit }: IProps) {
           <input type="text" name="title" id="title" value={data} onChange={e=>setData(e.target.value)} />
         </Typography>
         <Typography id="modal-modal-description" sx={{ mt: 2 }} className="flex-between">
-          <Button variant="contained" color="primary" onClick={() => handleSubmit(data)}>Add</Button>
+          <Button variant="contained" color="primary" onClick={handleSave}>{value? "Update" : "Add"}</Button>
           <Button variant="contained" color="secondary" onClick={handleCancel}>Cancel</Button>
         </Typography>
       </Box>

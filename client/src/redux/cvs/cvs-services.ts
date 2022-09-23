@@ -1,3 +1,4 @@
+import { CV } from '../../@types/types';
 import getDataFromAPI from '../../utils/getDataFromAPI';
 
 const login = async (email: string, password: string) => {
@@ -30,6 +31,16 @@ const getCvs = async () => {
   return data;
 }
 
+const deleteCV = async (id: string) => {
+  const data = await getDataFromAPI.delete(`cv/${id}`);
+  return data;
+}
+
+const updateCV = async (cv: CV) => {
+  const data = await getDataFromAPI.put(`cv/${cv._id}`, cv);
+  return data;
+}
+
 const createSection = async (title: string, cvId: string) => {
   const data = await getDataFromAPI.post('section', { title, cvId });
   return data;
@@ -47,6 +58,8 @@ const cvsService = {
   resetPassword,
   createCV,
   getCvs,
+  deleteCV,
+  updateCV,
   createSection,
   getSections,
 };

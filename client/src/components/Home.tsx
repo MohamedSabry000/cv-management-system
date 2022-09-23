@@ -1,20 +1,25 @@
 import { Box, Button, Container, Grid, Modal, Typography } from '@mui/material'
-import React from 'react'
+import { useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { createCV } from '../redux/cvs/cvs-slice'
 import { CVList } from '.'
 
 function Home() {
 
-  const [show, setShow] = React.useState(false)
-  const [cvName, setCvName] = React.useState('')
+  const [show, setShow] = useState(false)
+  const [cvName, setCvName] = useState('')
 
   const { user } = useSelector((state: any) => state.cv)
-  console.log(user);
   const dispatch = useDispatch()
 
   const handleCreateCV = () => {
     dispatch(createCV({ name: cvName, email: user.email }) as any)
+    setCvName('')
+    setShow(false)
+  }
+
+  const handleCancel = () => {
+    setCvName('')
     setShow(false)
   }
 
@@ -27,7 +32,7 @@ function Home() {
           </div>
         </Grid>
         <Grid item xs={12}>
-          <div>
+          <div className="flex-center">
             <CVList />
           </div>
         </Grid>
@@ -51,7 +56,7 @@ function Home() {
               </Typography>
               <Typography id="modal-modal-description" sx={{ mt: 2 }} className="flex-between">
                 <Button variant="contained" color="primary" onClick={handleCreateCV}>Create</Button>
-                <Button variant="contained" color="secondary" onClick={() => setShow(false)}>Cancel</Button>
+                <Button variant="contained" color="secondary" onClick={handleCancel}>Cancel</Button>
               </Typography>
             </Box>
           </Modal>

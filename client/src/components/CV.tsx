@@ -1,14 +1,14 @@
 import { Box, Button, Container, Grid, Modal, Typography } from '@mui/material'
-import React, { useEffect } from 'react'
-import { useDispatch, useSelector } from 'react-redux'
+import { useEffect, useState } from 'react'
+import { useDispatch } from 'react-redux'
 import { useParams } from 'react-router-dom'
 import { createSection, getSections } from '../redux/cvs/cvs-slice'
 import { SectionList } from '.'
 
 function CV() {
 
-  const [show, setShow] = React.useState(false)
-  const [sectionTitle, setSectionTitle] = React.useState('')
+  const [show, setShow] = useState(false)
+  const [sectionTitle, setSectionTitle] = useState('')
 
   const { id } = useParams()
 
@@ -20,6 +20,12 @@ function CV() {
 
   const handleCreateSection = () => {
     dispatch(createSection({ title: sectionTitle, cvId: id ?? '' }) as any)
+    setSectionTitle('')
+    setShow(false)
+  }
+
+  const handleCancel = () => {
+    setSectionTitle('')
     setShow(false)
   }
 
@@ -32,7 +38,7 @@ function CV() {
           </div>
         </Grid>
         <Grid item xs={12}>
-          <div>
+          <div className="flex-center">
             <SectionList />
           </div>
         </Grid>
@@ -56,7 +62,7 @@ function CV() {
               </Typography>
               <Typography id="modal-modal-description" sx={{ mt: 2 }} className="flex-between">
                 <Button variant="contained" color="primary" onClick={handleCreateSection}>Add</Button>
-                <Button variant="contained" color="secondary" onClick={() => setShow(false)}>Cancel</Button>
+                <Button variant="contained" color="secondary" onClick={handleCancel}>Cancel</Button>
               </Typography>
             </Box>
           </Modal>

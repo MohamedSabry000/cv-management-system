@@ -1,4 +1,4 @@
-import { Avatar, Card, CardHeader, Container, Grid, IconButton } from '@mui/material'
+import { Alert, Avatar, Card, CardHeader, CircularProgress, Container, Grid, IconButton } from '@mui/material'
 import { red } from '@mui/material/colors';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 
@@ -9,36 +9,40 @@ import { useNavigate } from 'react-router-dom';
 // import {CVList} from './'
 
 function CVList() {
-  const { cvs } = useSelector((state: any) => state.cv)
+  const { isLoading, isSuccess, isError, cvs } = useSelector((state: any) => state.cv)
 
   const navigate = useNavigate()
 
   return (
-    <Container component="main" maxWidth="lg" style={{margin: "10px auto"}}>
-      <Grid container spacing={2}>
-        {
-          cvs.map((cv: CV) => (
-            <Grid item xs={12} md={6} lg={4} key={cv._id}>
-              <Card sx={{ maxWidth: 345 }} onClick={() => navigate(`/cv/${cv._id}`)}>
-                <CardHeader
-                  avatar={
-                    <Avatar sx={{ bgcolor: red[500] }} aria-label="recipe">
-                      {cv.name[0].toUpperCase()}
-                    </Avatar>
-                  }
-                  action={
-                    <IconButton aria-label="settings">
-                      <MoreVertIcon />
-                    </IconButton>
-                  }
-                  title={cv.name}
-                />
-              </Card>
-            </Grid>
-          ))
-        }
-      </Grid>
-    </Container>
+    isLoading ? <CircularProgress color="secondary" />
+    : isError ? <Alert severity="error">Something went Error, Make sure from internet Connection !</Alert>
+    : isSuccess && (
+      <Container component="main" maxWidth="lg" style={{margin: "10px auto"}}>
+        <Grid container spacing={2}>
+          {
+            cvs.map((cv: CV) => (
+              <Grid item xs={12} md={6} lg={4} key={cv._id}>
+                <Card sx={{ maxWidth: 345 }} onClick={() => navigate(`/cv/${cv._id}`)}>
+                  <CardHeader
+                    avatar={
+                      <Avatar sx={{ bgcolor: red[500] }} aria-label="recipe">
+                        {cv.name[0].toUpperCase()}
+                      </Avatar>
+                    }
+                    action={
+                      <IconButton aria-label="settings">
+                        <MoreVertIcon />
+                      </IconButton>
+                    }
+                    title={cv.name}
+                  />
+                </Card>
+              </Grid>
+            ))
+          }
+        </Grid>
+      </Container>
+    )
   )
 }
 

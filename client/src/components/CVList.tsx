@@ -17,37 +17,44 @@ function CVList() {
   const [currentCV, setCurrentCV] = useState<CV|null>(null)
   const [currentCVValue, setCurrentCVValue] = useState<string|null>(null)
 
+  const {user} = useSelector((state: any) => state.cv)
+
   const navigate = useNavigate()
   const dispatch = useDispatch()
 
   useEffect(() => {
     dispatch(getCvs() as any)
-  }, [dispatch])
+  }, [user, dispatch])
 
-  const handleOpenMenu = (event: React.MouseEvent<HTMLElement>) => {
+  const handleOpenMenu = (event: React.MouseEvent<HTMLElement>, cv: CV) => {
     event.stopPropagation();
-    anchorEl === event.currentTarget ? setAnchorEl(null) : setAnchorEl(event.currentTarget);
+    if(anchorEl === event.currentTarget) {
+      handleCloseMenu()
+    } else {
+      setAnchorEl(event.currentTarget);
+      setCurrentCV(cv)
+      console.log(cv);
+    }
   };
 
   const handleCloseMenu = () => {
     setAnchorEl(null);
+    setCurrentCV(null)
   };
 
-  const handleEdit = (cv: CV) => {
-    setCurrentCV(cv)
-    console.log(cv);
-    setCurrentCVValue(cv.name)
+  const handleEdit = () => {
+    setCurrentCVValue(currentCV?.name || '')
     setShow(true)
-    handleCloseMenu()
   }
 
-  const deleteElement = (id: string) => {
-    dispatch(deleteCV(id) as any)
+  const deleteElement = () => {
+    currentCV && dispatch(deleteCV(currentCV._id) as any)
     handleCloseMenu()
   }
 
   const editElement = (value: string) => {
     currentCV && dispatch(updateCV({ ...currentCV, name: value || '' }) as any)
+    handleCloseMenu()
   }
 
   return (
@@ -68,36 +75,10 @@ function CVList() {
                     }
                     action={
                       <div>
-                        <IconButton aria-label="settings" onClick={handleOpenMenu}>
+                        <IconButton aria-label="settings" onClick={e => handleOpenMenu(e, cv)}>
                           <MoreVertIcon />
                         </IconButton>
-                        <Menu
-                          anchorEl={anchorEl}
-                          anchorOrigin={{
-                            vertical: 'bottom',
-                            horizontal: 'left',
-                          }}
-                          keepMounted
-                          transformOrigin={{
-                            vertical: 'top',
-                            horizontal: 'left',
-                          }}
-                          open={Boolean(anchorEl)}
-                          onClose={handleCloseMenu}
-                          sx={{
-                            display: { xs: 'block' },
-                          }}
-                        >
-                          <MenuItem onClick={() => navigate(`/cv/${cv._id}`)}>
-                            <Typography textAlign="center">View</Typography>
-                          </MenuItem>
-                          <MenuItem onClick={() => handleEdit(cv)}>
-                            <Typography textAlign="center">Edit</Typography>
-                          </MenuItem>
-                          <MenuItem onClick={() => deleteElement(cv._id)}>
-                            <Typography textAlign="center">Delete</Typography>
-                          </MenuItem>
-                        </Menu>
+
                       </div>
                     }
                     title={cv.name}
@@ -118,6 +99,33 @@ function CVList() {
             />
           )
         }
+        <Menu
+          anchorEl={anchorEl}
+          anchorOrigin={{
+            vertical: 'bottom',
+            horizontal: 'left',
+          }}
+          keepMounted
+          transformOrigin={{
+            vertical: 'top',
+            horizontal: 'left',
+          }}
+          open={Boolean(anchorEl)}
+          onClose={handleCloseMenu}
+          sx={{
+            display: { xs: 'block' },
+          }}
+        >
+          <MenuItem onClick={() => navigate(`/cv/${currentCV?._id}`)}>
+            <Typography textAlign="center">View</Typography>
+          </MenuItem>
+          <MenuItem onClick={handleEdit}>
+            <Typography textAlign="center">Edit</Typography>
+          </MenuItem>
+          <MenuItem onClick={deleteElement}>
+            <Typography textAlign="center">Delete</Typography>
+          </MenuItem>
+        </Menu>
       </Container>
     )
   )

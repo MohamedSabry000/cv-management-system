@@ -1,4 +1,4 @@
-import * as React from 'react';
+import { useEffect } from 'react';
 import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
 import CssBaseline from '@mui/material/CssBaseline';
@@ -12,8 +12,8 @@ import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
-import { useDispatch } from 'react-redux';
-import { login } from '../redux/cvs/cvs-slice';
+import { useDispatch, useSelector } from 'react-redux';
+import { getCvs, login } from '../redux/cvs/cvs-slice';
 
 function Copyright(props: any) {
   return (
@@ -32,6 +32,13 @@ const theme = createTheme();
 
 export default function Login() {
   const dispatch = useDispatch();
+  const { logged } = useSelector((state: any) => state.cv);
+
+  useEffect(() => {
+    if (logged) {
+      dispatch(getCvs() as any);
+    }
+  }, [logged, dispatch]);
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();

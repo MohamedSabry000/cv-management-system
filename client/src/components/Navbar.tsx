@@ -18,8 +18,8 @@ import { useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { setLogout } from '../redux/cvs/cvs-slice';
 
-const pages = [
-  {key: 'create-cv', value: 'Create CV', path: '/cv/create'},
+const pages: any[] = [
+
 ]
 const settings = [{key:'logout', value: 'Logout'}];
 

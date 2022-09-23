@@ -2,32 +2,57 @@ import { Alert, Avatar, Card, CardHeader, CircularProgress, Container, Grid, Ico
 import { red } from '@mui/material/colors';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 
-import React from 'react'
+import { useState, useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { Section } from '../@types/types'
+import ModalComponent from './ModalComponent';
+import { deleteSection, getSections, updateSection } from '../redux/cvs/cvs-slice';
+import { useParams } from 'react-router-dom';
 // import {CVList} from './'
 
 function SectionList() {
   const { isLoading, isSuccess, isError, sections } = useSelector((state: any) => state.cv)
-  const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+  const [show, setShow] = useState(false)
+  const [currentSection, setCurrentSection] = useState<Section|null>(null)
+  const [currentSectionValue, setCurrentSectionValue] = useState<string|null>(null)
 
   const dispatch = useDispatch()
+  const { id } = useParams()
 
-  const handleOpenMenu = (event: React.MouseEvent<HTMLElement>) => {
+  useEffect(() => {
+    dispatch(getSections(id || '') as any)
+  }, [id, dispatch])
+
+  const handleOpenMenu = (event: React.MouseEvent<HTMLElement>, section: Section) => {
     event.stopPropagation();
-    anchorEl === event.currentTarget ? setAnchorEl(null) : setAnchorEl(event.currentTarget);
+    if(anchorEl === event.currentTarget) {
+      handleCloseMenu()
+    } else {
+      setAnchorEl(event.currentTarget);
+      setCurrentSection(section)
+      console.log(section);
+    }
   };
 
   const handleCloseMenu = () => {
     setAnchorEl(null);
+    setCurrentSection(null)
   };
 
-  const handleEdit = (id: string) => {
-
+  const handleEdit = () => {
+    setCurrentSectionValue(currentSection?.title || '')
+    setShow(true)
   }
 
-  const deleteElement = (id: string) => {
+  const deleteElement = () => {
+    currentSection && dispatch(deleteSection(currentSection._id) as any)
+    handleCloseMenu()
+  }
 
+  const editElement = (value: string) => {
+    currentSection && dispatch(updateSection({ ...currentSection, title: value || '' }) as any)
+    handleCloseMenu()
   }
 
   return (
@@ -48,33 +73,9 @@ function SectionList() {
                     }
                     action={
                       <div>
-                        <IconButton aria-label="settings" onClick={handleOpenMenu}>
+                        <IconButton aria-label="settings" onClick={e => handleOpenMenu(e, section)}>
                           <MoreVertIcon />
                         </IconButton>
-                        <Menu
-                          anchorEl={anchorEl}
-                          anchorOrigin={{
-                            vertical: 'bottom',
-                            horizontal: 'left',
-                          }}
-                          keepMounted
-                          transformOrigin={{
-                            vertical: 'top',
-                            horizontal: 'left',
-                          }}
-                          open={Boolean(anchorEl)}
-                          onClose={handleCloseMenu}
-                          sx={{
-                            display: { xs: 'block' },
-                          }}
-                        >
-                          <MenuItem onClick={() => handleEdit(section._id)}>
-                            <Typography textAlign="center">Edit</Typography>
-                          </MenuItem>
-                          <MenuItem onClick={() => deleteElement(section._id)}>
-                            <Typography textAlign="center">Delete</Typography>
-                          </MenuItem>
-                        </Menu>
                       </div>
                     }
                     title={section.title}
@@ -84,6 +85,41 @@ function SectionList() {
             ))
           }
         </Grid>
+        {
+          show && (
+            <ModalComponent
+              setShow={setShow}
+              head="Update Your Section!"
+              label="Title"
+              value={currentSectionValue || ''}
+              handleSubmit={editElement}
+            />
+          )
+        }
+        <Menu
+          anchorEl={anchorEl}
+          anchorOrigin={{
+            vertical: 'bottom',
+            horizontal: 'left',
+          }}
+          keepMounted
+          transformOrigin={{
+            vertical: 'top',
+            horizontal: 'left',
+          }}
+          open={Boolean(anchorEl)}
+          onClose={handleCloseMenu}
+          sx={{
+            display: { xs: 'block' },
+          }}
+        >
+          <MenuItem onClick={handleEdit}>
+            <Typography textAlign="center">Edit</Typography>
+          </MenuItem>
+          <MenuItem onClick={deleteElement}>
+            <Typography textAlign="center">Delete</Typography>
+          </MenuItem>
+        </Menu>
       </Container>
     )
   )

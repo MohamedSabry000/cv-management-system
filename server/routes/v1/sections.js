@@ -2,7 +2,7 @@ const express = require('express');
 
 const sectionsRouter = express.Router();
 
-const { getSections, createNewSection } = require('../../controllers/sections')
+const { getSections, createNewSection, deleteSection, updateSection } = require('../../controllers/sections')
 const { authenticated } = require('../../controllers/auth');
 
 sectionsRouter.route('/')
@@ -10,6 +10,11 @@ sectionsRouter.route('/')
 
 sectionsRouter.route('/:cvId')
   .get( authenticated, getSections )
+
+sectionsRouter.route('/:sectionId')
+  .put( authenticated, updateSection)
+  .delete( authenticated, deleteSection )
+
 
 
 module.exports = sectionsRouter;

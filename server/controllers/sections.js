@@ -13,5 +13,16 @@ module.exports = {
         const section = await Section.create({title, cvId});
         console.log(section)
         res.json({status: 'success', section})
+    }),
+    deleteSection: catchAsync(async (req, res) => {
+        const { sectionId } = req.params;
+        const section = await Section.findByIdAndDelete(sectionId);
+        res.json({status: 'success', section})
+    }),
+    updateSection: catchAsync(async (req, res) => {
+        const { sectionId } = req.params;
+        const { title } = req.body;
+        const section = await Section.findByIdAndUpdate(sectionId, {title}, {new: true});
+        res.json({status: 'success', section})
     })
 }

@@ -4,6 +4,7 @@ const { catchAsync } = require('../utils/utils');
 
 module.exports = {
     getCvs: catchAsync(async (req, res) => {
+        console.log("Id from Token: ", req.userId)
         const cvs = await CV.find({ user: req.userId });
         res.json({status: 'success', cvs})
     }),
@@ -22,8 +23,10 @@ module.exports = {
     }),
     updateCv: catchAsync(async (req, res) => {
         const { cvId } = req.params;
+        console.log("==============================")
+
         const { name, email } = req.body;
-        const cv = await CV.findByIdAndUpdate(cvId, {name, email});
+        const cv = await CV.findByIdAndUpdate(cvId, {name, email}, {new: true});
         res.json({status: 'success', cv})
     })
 }

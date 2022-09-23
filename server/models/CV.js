@@ -6,7 +6,8 @@ const cvScheme = new Schema({
         required: [true, "CV Name is Required"],
         unique: true
     },
-    email: String
+    email: String,
+    user: String,
 },{
     timestamps: true
 })

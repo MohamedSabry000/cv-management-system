@@ -76,6 +76,19 @@ export const getSections = createAsyncThunk(
   }
 );
 
+export const deleteSection = createAsyncThunk(
+  'cvs/deleteSection',
+  async (id: string) => {
+    return await cvsService.deleteSection(id);
+  }
+);
+
+export const updateSection = createAsyncThunk(
+  'cvs/updateSection',
+  async (section: Section) => {
+    return await cvsService.updateSection(section);
+  }
+);
 
 const initialState = {
   user: null as User | null,
@@ -84,6 +97,7 @@ const initialState = {
   isLoading: false as boolean,
   isSuccess: false as boolean,
   isError: false as boolean,
+  logged: false as boolean,
 };
 
 const cvsSlice = createSlice({
@@ -96,9 +110,10 @@ const cvsSlice = createSlice({
       });
     },
     setLogout(state) {
-      state.user = null;
       state.cvs = [];
       state.sections = [];
+      state.user = null;
+      state.logged = false;
       localStorage.removeItem('token');
       Array.from(Object.entries(initialState)).forEach(([key, value]) => {
         state = {...state, [key]: value};
@@ -121,6 +136,7 @@ const cvsSlice = createSlice({
         state.isError = false;
         state.user = {name, email, token};
         localStorage.setItem('token', action.payload.data.token);
+        state.logged = true;
       } else {
         state.isError = true;
         state.isSuccess = false;
@@ -262,6 +278,10 @@ const cvsSlice = createSlice({
         state.isError = true;
       }
     },
+    [deleteCV.rejected.type]: (state, action) => {
+      state.isLoading = false;
+      state.isError = true;
+    },
     // Create Section
     [createSection.pending.type]: (state, action) => {
       state.isLoading = true;
@@ -297,6 +317,47 @@ const cvsSlice = createSlice({
       }
     },
     [getSections.rejected.type]: (state, action) => {
+      state.isLoading = false;
+      state.isError = true;
+    },
+    // Update Section
+    [updateSection.pending.type]: (state, action) => {
+      state.isLoading = true;
+    },
+    [updateSection.fulfilled.type]: (state, action) => {
+      state.isLoading = false;
+      if(action.payload.data.status === 'success') {
+        state.isSuccess = true;
+        state.isError = false;
+        const index = state.sections.findIndex(section => section._id === action.payload.data.section._id);
+        console.log(action.payload.data.section);
+        state.sections[index] = action.payload.data.section;
+      } else {
+        state.isSuccess = false;
+        state.isError = true;
+      }
+    },
+    [updateSection.rejected.type]: (state, action) => {
+      state.isLoading = false;
+      state.isError = true;
+    },
+    // Delete Section
+    [deleteSection.pending.type]: (state, action) => {
+      state.isLoading = true;
+    },
+    [deleteSection.fulfilled.type]: (state, action) => {
+      state.isLoading = false;
+      if(action.payload.data.status === 'success') {
+        state.isSuccess = true;
+        state.isError = false;
+        const index = state.sections.findIndex(section => section._id === action.payload.data.section._id);
+        state.sections.splice(index, 1);
+      } else {
+        state.isSuccess = false;
+        state.isError = true;
+      }
+    },
+    [deleteSection.rejected.type]: (state, action) => {
       state.isLoading = false;
       state.isError = true;
     },

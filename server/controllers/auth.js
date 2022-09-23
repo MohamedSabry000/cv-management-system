@@ -11,18 +11,19 @@ module.exports = {
   login: catchAsync(async (req, res) => {
     const { email, password } = req.body;
     // find email
-    console.log("email, passwor")
-    console.log(email, password)
+    // console.log("email, passwor")
+    // console.log(email, password)
     const user = await User.findOne({email});
-    console.log("user")
-    console.log(user)
-    console.log(!user)
-    console.log(!(await compare(password, user.password)))
-    console.log(user.verified === false)
+    // console.log("user")
+    // console.log(user)
+    // console.log(password)
+    // console.log(!(await compare(password, user.password)))
+    // console.log(user.verified === false)
     // match
     if(!user || !(await compare(password, user.password)) || user.verified === false) res.json({status: 'failure', message: 'Invalid Email or Password'})
     else {
-        const token = jwt.sign({id: user.id}, process.env.JWT_SECRET , {
+        console.log("user Email: ", user.email)
+        const token = jwt.sign({id: user.email}, process.env.JWT_SECRET , {
             expiresIn: '90d'
         })
 
@@ -166,11 +167,12 @@ module.exports = {
   }),
   authenticated: (req, res, next) => {
     try{
-        console.log(req.headers)
+        // console.log(req.headers)
         const token = req.headers.authorization.split(' ')[1];
 
         const decodedToken = jwt.verify(token, process.env.JWT_SECRET)
         const { id } = decodedToken;
+        console.log(id)
         req.userId = id;
         return next();
     } catch(error){

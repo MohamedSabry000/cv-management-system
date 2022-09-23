@@ -1,6 +1,8 @@
 const express = require('express');
 const morgan = require('morgan');
 const cors = require('cors')
+const path = require("path")
+
 
 const authRouter = require('./routes/v1/auth');
 const cvsRouter = require('./routes/v1/cvs');

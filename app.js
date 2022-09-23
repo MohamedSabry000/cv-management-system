@@ -13,16 +13,14 @@ app.use(cors({
     origin: '*'
 }));
 
+app.use(express.static(path.join(__dirname, "client", "build")))
 
 app.use('/api/v1', authRouter);
 app.use('/api/v1/cv', cvsRouter);
 app.use('/api/v1/section', sectionsRouter);
 
 app.all('*', (req, res) => {
-    res.json({
-        status: 'failure',
-        message: 'wrong url'
-    })
+    res.sendFile(path.join(__dirname, "client", "build", "index.html"));
 });
 
 app.use((err, req, res, next) => {

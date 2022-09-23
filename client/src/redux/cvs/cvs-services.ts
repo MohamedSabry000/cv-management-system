@@ -30,13 +30,25 @@ const getCvs = async () => {
   return data;
 }
 
+const createSection = async (title: string, cvId: string) => {
+  const data = await getDataFromAPI.post('section', { title, cvId });
+  return data;
+}
+
+const getSections = async (cvId: string) => {
+  const data = await getDataFromAPI.get('section/'+cvId);
+  return data;
+}
+
 const cvsService = {
   login,
   register,
   forgotPassword,
   resetPassword,
   createCV,
-  getCvs
+  getCvs,
+  createSection,
+  getSections,
 };
 
 export default cvsService;

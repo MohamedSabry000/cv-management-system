@@ -4,6 +4,7 @@ const cors = require('cors')
 
 const authRouter = require('./routes/v1/auth');
 const cvsRouter = require('./routes/v1/cvs');
+const sectionsRouter = require('./routes/v1/sections');
 
 const app = express();
 app.use(express.json());
@@ -15,6 +16,7 @@ app.use(cors({
 
 app.use('/api/v1', authRouter);
 app.use('/api/v1/cv', cvsRouter);
+app.use('/api/v1/section', sectionsRouter);
 
 app.all('*', (req, res) => {
     res.json({

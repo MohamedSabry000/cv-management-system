@@ -1,6 +1,6 @@
 import { BASE_URL } from '../../utils/getDataFromAPI'
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import { User, CV } from '../../@types/types';
+import { User, CV, Section } from '../../@types/types';
 
 import cvsService from './cvs-services';
 
@@ -47,17 +47,33 @@ export const getCvs = createAsyncThunk(
   }
 );
 
+// TODO: add createSection thunk
+export const createSection = createAsyncThunk(
+  'cvs/createSection',
+  async (section: { title: string, cvId: string }) => {
+    return await cvsService.createSection(section.title, section.cvId);
+  }
+);
+
+export const getSections = createAsyncThunk(
+  'cvs/getSections',
+  async (cvId: string) => {
+    return await cvsService.getSections(cvId);
+  }
+);
+
 
 const initialState = {
   user: null as User | null,
   cvs: [] as CV[],
+  sections: [] as Section[],
   isLoading: false as boolean,
   isSuccess: false as boolean,
   isError: false as boolean,
 };
 
 const cvsSlice = createSlice({
-  name: 'videos',
+  name: 'cvs',
   initialState,
   reducers: {
     reset(state) {
@@ -68,6 +84,7 @@ const cvsSlice = createSlice({
     setLogout(state) {
       state.user = null;
       state.cvs = [];
+      state.sections = [];
       localStorage.removeItem('token');
       Array.from(Object.entries(initialState)).forEach(([key, value]) => {
         state = {...state, [key]: value};
@@ -191,6 +208,44 @@ const cvsSlice = createSlice({
       }
     },
     [getCvs.rejected.type]: (state, action) => {
+      state.isLoading = false;
+      state.isError = true;
+    },
+    // Create Section
+    [createSection.pending.type]: (state, action) => {
+      state.isLoading = true;
+    },
+    [createSection.fulfilled.type]: (state, action) => {
+      state.isLoading = false;
+      if(action.payload.data.status === 'success') {
+        state.isSuccess = true;
+        state.isError = false;
+        state.sections.push(action.payload.data.section);
+      } else {
+        state.isSuccess = false;
+        state.isError = true;
+      }
+    },
+    [createSection.rejected.type]: (state, action) => {
+      state.isLoading = false;
+      state.isError = true;
+    },
+    // Get Sections
+    [getSections.pending.type]: (state, action) => {
+      state.isLoading = true;
+    },
+    [getSections.fulfilled.type]: (state, action) => {
+      state.isLoading = false;
+      if(action.payload.data.status === 'success') {
+        state.isSuccess = true;
+        state.isError = false;
+        state.sections = action.payload.data.sections;
+      } else {
+        state.isSuccess = false;
+        state.isError = true;
+      }
+    },
+    [getSections.rejected.type]: (state, action) => {
       state.isLoading = false;
       state.isError = true;
     },

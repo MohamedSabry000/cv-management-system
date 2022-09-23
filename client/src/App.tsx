@@ -9,6 +9,7 @@ import {
   ForgotPassword,
   ResetPassword,
   Home,
+  CV,
 } from './components';
 import { useEffect } from 'react';
 import { reset } from './redux/cvs/cvs-slice';
@@ -28,6 +29,7 @@ function App() {
             user ? (
               <>
                 <Route path="/" element={<Home />} />
+                <Route path="cv/:id" element={<CV />} />
               </>
             ) : (
               <>
